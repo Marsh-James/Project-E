@@ -1,4 +1,4 @@
-package uk.ac.soton.ecs.compvisgroup.apple;
+package uk.ac.soton.ecs.compvisgroup.apple.run1;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
