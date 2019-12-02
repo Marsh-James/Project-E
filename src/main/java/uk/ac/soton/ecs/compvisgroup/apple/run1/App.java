@@ -1,35 +1,40 @@
 package uk.ac.soton.ecs.compvisgroup.apple.run1;
 
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.typography.hershey.HersheyFont;
-import uk.ac.soton.ecs.compvisgroup.apple.run1.knn.KNearest;
+
+import org.apache.commons.vfs2.FileSystemException;
+import org.openimaj.data.dataset.VFSGroupDataset;
+import org.openimaj.data.dataset.VFSListDataset;
+import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 
 /**
  * OpenIMAJ Hello world!
  *
  */
 public class App {
-    public static void main( String[] args ) {
-        KNearest test = new KNearest();
+    public static void main( String[] args ) throws FileSystemException {
+        KNearest knn = new KNearest();
+        TinyImageProcessor ti = new TinyImageProcessor(16);
 
-        
-    	//Create an image
-        MBFImage image = new MBFImage(320,70, ColourSpace.RGB);
+        // Open Dataset
+        System.out.println("Loading Train and Test datasets");
+        String resourcesDir = App.class.getClassLoader().getResource("").toString();
+        // GroupDataset keeps the label for training data
+        VFSGroupDataset<FImage> training = new VFSGroupDataset<>("zip:" + resourcesDir + "training.zip", ImageUtilities.FIMAGE_READER);
+        // We don't need the label for the testing data, so we use a ListDataset
+        VFSListDataset<FImage> testing = new VFSListDataset<>("zip:" + resourcesDir + "testing.zip", ImageUtilities.FIMAGE_READER);
+        System.out.println(training);
+        System.out.println(testing);
 
-        //Fill the image with white
-        image.fill(RGBColour.WHITE);
-        		        
-        //Render some test into the image
-        image.drawText("Hello World", 10, 60, HersheyFont.CURSIVE, 50, RGBColour.BLACK);
 
-        //Apply a Gaussian blur
-        image.processInplace(new FGaussianConvolve(2f));
-        
-        //Display the image
-        DisplayUtilities.display(image);
+        for (FImage image : testing) {
+            ti.generateTinyImage(image);
+        }
+
+
+
+
     }
+
+
 }
