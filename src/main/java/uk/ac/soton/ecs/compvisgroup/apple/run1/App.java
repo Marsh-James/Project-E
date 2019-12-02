@@ -6,6 +6,7 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.typography.hershey.HersheyFont;
+import uk.ac.soton.ecs.compvisgroup.apple.run1.knn.KNearest;
 
 /**
  * OpenIMAJ Hello world!
@@ -13,6 +14,9 @@ import org.openimaj.image.typography.hershey.HersheyFont;
  */
 public class App {
     public static void main( String[] args ) {
+        KNearest test = new KNearest();
+
+        
     	//Create an image
         MBFImage image = new MBFImage(320,70, ColourSpace.RGB);
 
