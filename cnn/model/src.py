@@ -69,7 +69,7 @@ model.add(MaxPooling2D((2,2)))
 model.add(Dropout(0.3))
 model.add(Conv2D(768, kernel_size=3, activation='relu'))
 model.add(MaxPooling2D((2,2)))
-model.add(Dropout(0.3))
+model.add(Dropout(0.4))
 model.add(Flatten())
 model.add(Dense(15, activation='softmax'))
 
@@ -88,3 +88,5 @@ model.fit_generator(
     validation_steps=32,
     epochs=15,
 )
+
+model.save('model-v1.h5')
