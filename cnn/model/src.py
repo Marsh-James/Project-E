@@ -57,12 +57,19 @@ validation_data_gen = train_datagenerator.flow_from_directory(
     subset="validation")
 
 model = Sequential()
-model.add(Conv2D(32, kernel_size=3, activation='relu', input_shape=(128, 128, 1)))
+model.add(Conv2D(64, kernel_size=3, activation='relu', input_shape=(128, 128, 1)))
 model.add(MaxPooling2D((2,2)))
-model.add(Conv2D(32, kernel_size=3, activation='relu'))
+model.add(Conv2D(128, kernel_size=3, activation='relu'))
 model.add(MaxPooling2D((2,2)))
-model.add(Conv2D(64, kernel_size=3, activation='relu'))
+model.add(Conv2D(256, kernel_size=3, activation='relu'))
 model.add(MaxPooling2D((2,2)))
+model.add(Dropout(0.2))
+model.add(Conv2D(512, kernel_size=3, activation='relu'))
+model.add(MaxPooling2D((2,2)))
+model.add(Dropout(0.3))
+model.add(Conv2D(768, kernel_size=3, activation='relu'))
+model.add(MaxPooling2D((2,2)))
+model.add(Dropout(0.3))
 model.add(Flatten())
 model.add(Dense(15, activation='softmax'))
 
@@ -74,13 +81,10 @@ model.compile(optimizer='adam',
 #           validation_data=(x_validation, y_validation),
 #           epochs=15)
 
-print("Train Samples: " + str(train_data_gen.samples))
-print("Val Samples: " + str(validation_data_gen.samples))
-
 model.fit_generator(
     train_data_gen,
-    steps_per_epoch=128,
+    steps_per_epoch=96,
     validation_data=validation_data_gen,
     validation_steps=32,
-    epochs=20,
+    epochs=15,
 )
