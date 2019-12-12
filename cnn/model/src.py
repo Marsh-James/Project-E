@@ -73,9 +73,21 @@ def predictions():
     # Pair up prediction and file to produce output in console and in file.
     filenames = test_generator.filenames
     filenames = list(map(os.path.basename, filenames))
-    output = pd.DataFrame({"File": filenames, "Prediction": prediction})
-    output.to_csv("./run3.txt", index=None, header=False, sep=" ")
-    print(output)
+
+    # Pair predictions with filenames
+    data_pair = []
+    for idx in range(0, len(filenames)):
+        data_pair.append((filenames[idx], prediction[idx]))
+
+    # Sort predictions in order of image number
+    data_pair = list(sorted(data_pair, key=lambda x: int((x[0].split('.'))[0])))
+
+    # Write to file
+    f = open('run3.txt', 'w')
+    for tuple in data_pair:
+        f.write(' '.join(str(s) for s in tuple) + '\n')
+    f.close()
+
 
 # If model already has been trained skip this part, if not, continue
 if not path.exists("model-v1.h5"):
