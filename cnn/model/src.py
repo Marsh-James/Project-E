@@ -13,31 +13,11 @@ import os
 from PIL import Image
 import numpy as np
 
-# train_data = []
-# train_labels = []
-
-# for (dirpath, dirnames, filenames) in os.walk("../data/"):
-#     images = [f for f in filenames if f.endswith(".jpg")]
-#     for imageFile in images:
-#         image = Image.open(os.path.join(dirpath, imageFile))
-#         image.convert("L")
-#         image.resize((256, 256), Image.ANTIALIAS)
-#         train_data.append(np.array(image))
-#         train_labels.append(os.path.basename(dirpath))
-
-# train_data = np.array(train_data)
-# train_labels = np.array(train_labels)
-# print(train_data)
-# print(train_labels)
-
-# x_train, y_train, x_validation, y_validation = train_test_split(
-#     train_data,
-#     train_labels,
-#     test_size=0.2,
-#     shuffle=True
-# )
-# datagfen
-
+'''
+Generators are used to pull all training & validation data out from named files,
+    where the file acts as the class for the image group. Flow_from_directory() allows
+    formatting on-the-fly therefore completing all preprocessing.
+'''
 train_datagenerator = ImageDataGenerator(
     rescale=1./255,
     shear_range=0.2,
@@ -60,7 +40,10 @@ validation_data_gen = train_datagenerator.flow_from_directory(
     batch_size=32,
     subset="validation")
 
-
+'''
+Predictions method takes a trained model and an input folder to produce a txt output of
+    filenames and predictions.
+'''
 def predictions():
     test_datagen = ImageDataGenerator(rescale=1. / 255)
 
@@ -71,27 +54,38 @@ def predictions():
         batch_size=32,
         shuffle=False
     )
-
+    # Generator might have data loaded from training, so we reset
     test_generator.reset()
 
+    # Load in model to train from, irrespective if just trained or using old file
     model = load_model('model-v1.h5')
 
+    # Prediction classes are pulled from the model
     pred = model.predict_generator(test_generator, verbose=1)
     predicted_class_indices = np.argmax(pred, axis=1)
 
-    labels = (train_data_gen.class_indices)
-    labels = dict((v, k) for k, v in labels.items())
-    predictions = [labels[k] for k in predicted_class_indices]
+    # Labels are numerical values, we need to find the original class names to give meaning to the predictions
+    model_labels = (train_data_gen.class_indices)
+    model_labels = dict((v, k) for k, v in model_labels.items())
 
+    prediction = [model_labels[k] for k in predicted_class_indices]
+
+    # Pair up prediction and file to produce output in console and in file.
     filenames = test_generator.filenames
-    results = pd.DataFrame({"Filename": filenames,
-                            "Predictions": predictions})
-    results.to_csv("./predictions.csv", index=None, header=False)
-    print(results)
+    filenames = list(map(os.path.basename, filenames))
+    output = pd.DataFrame({"File": filenames, "Prediction": prediction})
+    output.to_csv("./run3.txt", index=None, header=False, sep=" ")
+    print(output)
 
-
+# If model already has been trained skip this part, if not, continue
 if not path.exists("model-v1.h5"):
 
+    '''
+    Model consists of increasing convolution layers of increasing node size to extract features.
+    Max pooling to decrease the resolution of the features extracted with dropout included to reduce overfitting.
+    
+    Final layer is flattened into a 15 node dense layer which corresponds to each prediction class
+    '''
     model = Sequential()
     model.add(Conv2D(64, kernel_size=3, activation='relu', input_shape=(128, 128, 1)))
     model.add(MaxPooling2D((2,2)))
@@ -113,10 +107,6 @@ if not path.exists("model-v1.h5"):
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 
-    # model.fit(x_train, y_train,
-    #           validation_data=(x_validation, y_validation),
-    #           epochs=15)
-
     model.fit_generator(
         train_data_gen,
         steps_per_epoch=96,
@@ -125,7 +115,10 @@ if not path.exists("model-v1.h5"):
         epochs=15,
     )
 
+    # File saved for later use
     model.save('model-v1.h5')
+
+    # Produce predictions on test set
     predictions()
 else:
     predictions()
