@@ -24,7 +24,7 @@ public class App {
         boolean useValidation = true; // Create an additional validation dataset from the labelled training data. Should be false for final model.
 
 
-        System.out.println("Loading Train and Test datasets");
+        System.out.println("Loading Train and Test datasets. Ensure training.zip and testing.zip are inside the resources folder.");
         String resourcesDir = App.class.getClassLoader().getResource("").toString();
         VFSGroupDataset<FImage> labelledData = new VFSGroupDataset<>("zip:" + resourcesDir + "training.zip", ImageUtilities.FIMAGE_READER);
         VFSListDataset<FImage> testing = new VFSListDataset<>("zip:" + resourcesDir + "testing.zip", ImageUtilities.FIMAGE_READER);
