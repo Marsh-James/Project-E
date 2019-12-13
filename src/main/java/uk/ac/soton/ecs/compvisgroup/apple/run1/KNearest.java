@@ -79,7 +79,6 @@ class KNearest {
         double incorrect = 0;
 
         for (Map.Entry<String, ListDataset<FImage>> images : validationDataset) {
-            System.out.println("Evaluating key : " + images.getKey());
             for (FImage image : images.getValue()) {
                 BasicClassificationResult<String> result = this.classify(featureExtractor, image);
 

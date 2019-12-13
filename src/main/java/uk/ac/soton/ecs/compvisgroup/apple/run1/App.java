@@ -19,9 +19,9 @@ import java.util.*;
  */
 public class App {
     public static void main(String[] args) throws FileSystemException {
-        TinyImageProcessor ti = new TinyImageProcessor(16);
+        TinyImageProcessor ti = new TinyImageProcessor(24);
         KNearest knn = new KNearest(20);
-        boolean useValidation = true; // Create an additional validation dataset from the labelled training data. Should be false for final model.
+        boolean useValidation = false; // Create an additional validation dataset from the labelled training data. Should be false for final model.
 
 
         System.out.println("Loading Train and Test datasets. Ensure training.zip and testing.zip are inside the resources folder.");
@@ -71,7 +71,7 @@ public class App {
         }
 
 
-        // Classify unlabelled data
+        //Classify unlabelled data
         Map<String, String> predictions = new TreeMap<>(new FileNameComparator());
         for (int i=0; i<testing.size()-1; i++) {
             String fileName = testing.getFileObject(i).getName().getBaseName();
